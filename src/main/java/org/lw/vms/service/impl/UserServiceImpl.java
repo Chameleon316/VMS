@@ -1,0 +1,101 @@
+package org.lw.vms.service.impl;
+
+import org.lw.vms.DTOs.UserLoginRequest;
+import org.lw.vms.DTOs.UserRegisterRequest;
+import org.lw.vms.entity.User;
+import org.lw.vms.mapper.UserMapper;
+import org.lw.vms.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+/**
+        * @version 1.0
+        * @auther Yongqi Wang
+ */
+
+
+/**
+        * 用户业务逻辑服务实现类。
+        * 实现了用户注册和登录的核心逻辑。
+        */
+@Service // 标识这是一个 Spring Service 组件
+public class UserServiceImpl implements UserService {
+
+    // 自动注入 UserMapper，用于数据库操作
+    @Autowired
+    private UserMapper userMapper;
+
+    /**
+            * 用户注册实现。
+            * 包含用户名存在性检查，直接存储明文密码和用户数据插入。
+            *
+            * @param request 注册请求DTO
+     * @return 注册成功的用户对象（密码已置空），注册失败则返回 null
+            */
+    @Override
+    @Transactional // 确保注册操作的原子性，如果在方法执行过程中发生异常，所有数据库操作将回滚
+    public User register(UserRegisterRequest request) {
+        // 1. 检查用户名是否已存在
+        User existingUser = userMapper.findByUsername(request.getUsername());
+        if (existingUser != null) {
+            System.err.println("注册失败：用户名 '" + request.getUsername() + "' 已存在。");
+            return null; // 用户名已存在，注册失败
+        }
+
+        // 2. 直接使用明文密码（不再加密）
+        String plainPassword = request.getPassword();
+
+        // 3. 构建新的用户对象
+        User newUser = new User();
+        newUser.setUsername(request.getUsername());
+        newUser.setPassword(plainPassword); // 直接存储明文密码
+        newUser.setName(request.getName());
+        newUser.setContact(request.getContact());
+        // 如果请求中没有指定角色，则默认设置为 'user'
+        newUser.setRole(request.getRole() != null ? request.getRole() : "user");
+
+        // 4. 插入新用户到数据库
+        int rowsAffected = userMapper.insertUser(newUser);
+
+        if (rowsAffected > 0) {
+            // 注册成功，出于安全考虑，返回前将密码置空
+            newUser.setPassword(null);
+            System.out.println("用户 '" + newUser.getUsername() + "' 注册成功。");
+            return newUser;
+        } else {
+            System.err.println("用户 '" + request.getUsername() + "' 注册失败：数据库插入操作未影响任何行。");
+            return null; // 数据库操作失败
+        }
+    }
+
+    /**
+            * 用户登录实现。
+            * 包含用户存在性检查和明文密码匹配验证。
+            *
+            * @param request 登录请求DTO
+     * @return 登录成功的用户对象（密码已置空），登录失败则返回 null
+            */
+    @Override
+    public User login(UserLoginRequest request) {
+        // 1. 根据用户名查询用户
+        User user = userMapper.findByUsername(request.getUsername());
+
+        // 2. 检查用户是否存在
+        if (user == null) {
+            System.err.println("登录失败：用户 '" + request.getUsername() + "' 不存在。");
+            return null; // 用户不存在
+        }
+
+        // 3. 直接比较明文密码（不再使用密码加密验证）
+        if (request.getPassword().equals(user.getPassword())) {
+            // 登录成功，出于安全考虑，返回前将密码置空
+            user.setPassword(null);
+            System.out.println("用户 '" + user.getUsername() + "' 登录成功。");
+            return user;
+
+        } else {
+            System.err.println("登录失败：用户 '" + request.getUsername() + "' 密码不匹配。");
+            return null; // 密码不匹配
+        }
+    }
+}

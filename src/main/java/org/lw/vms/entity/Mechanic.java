@@ -1,4 +1,4 @@
-package org.lw.vms.DAO;
+package org.lw.vms.entity;
 
 import org.lw.vms.enums.MechanicSpecialty;
 

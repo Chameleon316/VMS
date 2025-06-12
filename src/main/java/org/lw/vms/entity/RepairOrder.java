@@ -1,8 +1,6 @@
-package org.lw.vms.DAO;
+package org.lw.vms.entity;
 
 import org.lw.vms.enums.RepairOrderStatus;
-import org.lw.vms.enums.VehicleBrand;
-import org.lw.vms.enums.VehicleModel;
 
 import java.time.LocalDateTime;
 

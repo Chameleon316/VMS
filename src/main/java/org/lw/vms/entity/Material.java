@@ -1,4 +1,4 @@
-package org.lw.vms.DAO;
+package org.lw.vms.entity;
 
 public class Material {
     private int materialId;
