@@ -1,5 +1,6 @@
 package org.lw.vms.service;
 
+import org.lw.vms.DTOs.LoginResponse;
 import org.lw.vms.DTOs.UserLoginRequest;
 import org.lw.vms.DTOs.UserRegisterRequest;
 import org.lw.vms.entity.User;
@@ -21,7 +22,7 @@ public interface UserService {
      * 用户登录功能。
      *
      * @param request 包含登录凭据的请求对象 (username, password)。
-     * @return 登录成功的用户对象（不包含密码信息），如果用户名不存在或密码不匹配则返回 null。
+     * @return 登录成功的 LoginResponse 对象（包含用户信息和 JWT），如果用户名不存在或密码不匹配则返回 null。
      */
-    User login(UserLoginRequest request);
+    LoginResponse login(UserLoginRequest request); // 返回类型修改为 LoginResponse
 }

@@ -1,5 +1,6 @@
 package org.lw.vms.controller;
 
+import org.lw.vms.DTOs.LoginResponse;
 import org.lw.vms.DTOs.UserLoginRequest;
 import org.lw.vms.DTOs.UserRegisterRequest;
 import org.lw.vms.entity.User;
@@ -76,11 +77,11 @@ public class UserController {
         }
 
         // 2. 调用 UserService 进行用户登录业务处理
-        User loggedInUser = userService.login(request);
+        LoginResponse loggedInResponse = userService.login(request); // 接收 LoginResponse
 
         // 3. 根据业务处理结果返回统一响应
-        if (loggedInUser != null) {
-            return Result.success(loggedInUser, "登录成功！");
+        if (loggedInResponse != null) {
+            return Result.success(loggedInResponse, "登录成功！"); // 返回 LoginResponse
         } else {
             // 通常是用户名不存在或密码错误导致的登录失败
             return Result.fail("登录失败：用户名或密码不正确。");

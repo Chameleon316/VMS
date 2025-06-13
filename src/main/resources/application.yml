@@ -15,3 +15,7 @@ mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
 
+jwt:
+  expiration: 3600000
+  secret: yourVerySecureRandomBase64EncodedSecretKeyWhichShouldBeLongAndComplexAndUnique1234567890ABCDEF
+

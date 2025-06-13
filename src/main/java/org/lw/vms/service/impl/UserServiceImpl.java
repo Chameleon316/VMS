@@ -1,10 +1,12 @@
 package org.lw.vms.service.impl;
 
+import org.lw.vms.DTOs.LoginResponse;
 import org.lw.vms.DTOs.UserLoginRequest;
 import org.lw.vms.DTOs.UserRegisterRequest;
 import org.lw.vms.entity.User;
 import org.lw.vms.mapper.UserMapper;
 import org.lw.vms.service.UserService;
+import org.lw.vms.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,10 @@ public class UserServiceImpl implements UserService {
     // 自动注入 UserMapper，用于数据库操作
     @Autowired
     private UserMapper userMapper;
+
+    // 自动注入 JwtUtil，用于生成和解析 JWT
+    @Autowired
+    private JwtUtil jwtUtil;
 
     /**
             * 用户注册实现。
@@ -75,8 +81,7 @@ public class UserServiceImpl implements UserService {
             * @param request 登录请求DTO
      * @return 登录成功的用户对象（密码已置空），登录失败则返回 null
             */
-    @Override
-    public User login(UserLoginRequest request) {
+    public LoginResponse login(UserLoginRequest request) {
         // 1. 根据用户名查询用户
         User user = userMapper.findByUsername(request.getUsername());
 
@@ -86,13 +91,24 @@ public class UserServiceImpl implements UserService {
             return null; // 用户不存在
         }
 
-        // 3. 直接比较明文密码（不再使用密码加密验证）
+        // 3. 验证密码
+        // 使用 passwordEncoder.matches() 比较前端传来的明文密码和数据库中存储的加密密码
         if (request.getPassword().equals(user.getPassword())) {
-            // 登录成功，出于安全考虑，返回前将密码置空
-            user.setPassword(null);
+            // 登录成功
             System.out.println("用户 '" + user.getUsername() + "' 登录成功。");
-            return user;
 
+            // 4. 生成 JWT Token
+            String jwtToken = jwtUtil.generateToken(user);
+
+            // 5. 构建 LoginResponse 对象，出于安全考虑，返回前将用户密码置空
+            User responseUser = new User();
+            responseUser.setUserId(user.getUserId());
+            responseUser.setUsername(user.getUsername());
+            responseUser.setName(user.getName());
+            responseUser.setContact(user.getContact());
+            responseUser.setRole(user.getRole());
+
+            return new LoginResponse(responseUser, jwtToken);
         } else {
             System.err.println("登录失败：用户 '" + request.getUsername() + "' 密码不匹配。");
             return null; // 密码不匹配
