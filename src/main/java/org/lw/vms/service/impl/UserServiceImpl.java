@@ -3,13 +3,21 @@ package org.lw.vms.service.impl;
 import org.lw.vms.DTOs.LoginResponse;
 import org.lw.vms.DTOs.UserLoginRequest;
 import org.lw.vms.DTOs.UserRegisterRequest;
+import org.lw.vms.entity.RepairOrder;
 import org.lw.vms.entity.User;
+import org.lw.vms.entity.Vehicle;
+import org.lw.vms.mapper.MechanicMapper;
+import org.lw.vms.mapper.RepairOrderMapper;
 import org.lw.vms.mapper.UserMapper;
+import org.lw.vms.mapper.VehicleMapper;
 import org.lw.vms.service.UserService;
 import org.lw.vms.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 /**
         * @version 1.0
         * @auther Yongqi Wang
@@ -26,6 +34,15 @@ public class UserServiceImpl implements UserService {
     // 自动注入 UserMapper，用于数据库操作
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private VehicleMapper vehicleMapper; // 注入 VehicleMapper
+
+    @Autowired
+    private RepairOrderMapper repairOrderMapper; // 注入 RepairOrderMapper
+
+    @Autowired
+    private MechanicMapper mechanicMapper; // 注入 MechanicMapper
 
     // 自动注入 JwtUtil，用于生成和解析 JWT
     @Autowired
@@ -82,6 +99,7 @@ public class UserServiceImpl implements UserService {
      * @return 登录成功的用户对象（密码已置空），登录失败则返回 null
             */
     public LoginResponse login(UserLoginRequest request) {
+        System.out.println("用户 '" + request.getUsername() + "' 正在尝试登录...");
         // 1. 根据用户名查询用户
         User user = userMapper.findByUsername(request.getUsername());
 
@@ -113,5 +131,65 @@ public class UserServiceImpl implements UserService {
             System.err.println("登录失败：用户 '" + request.getUsername() + "' 密码不匹配。");
             return null; // 密码不匹配
         }
+    }
+
+    // --- 用户查询需求实现 ---
+
+    @Override
+    public User getUserAccountInfo(Integer userId) {
+        System.out.println("info service start");
+        User user = userMapper.findById(userId);
+        if (user != null) {
+            user.setPassword(null); // 安全起见，不返回密码
+        }
+        return user;
+    }
+
+    @Override
+    public List<Vehicle> getUserVehicles(Integer userId) {
+        return vehicleMapper.findByUserId(userId);
+    }
+
+    @Override
+    public List<RepairOrder> getUserRepairOrders(Integer userId) {
+        return repairOrderMapper.findByUserId(userId);
+    }
+
+    @Override
+    public List<RepairOrder> getUserHistoricalRepairRecords(Integer userId) {
+        // 假设历史维修记录是已完成的工单
+        return repairOrderMapper.findByUserId(userId).stream()
+                .filter(order -> "completed".equals(order.getStatus()))
+                .collect(Collectors.toList());
+    }
+
+    // --- 管理员查询需求实现 ---
+
+    @Override
+    public List<User> getAllUsers() {
+        // 获取所有用户，并移除密码信息
+        return userMapper.findAllUsers().stream()
+                .peek(user -> user.setPassword(null))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Vehicle> getAllVehicles() {
+        return vehicleMapper.findAllVehicles();
+    }
+
+    @Override
+    public List<RepairOrder> getAllRepairOrders() {
+        return repairOrderMapper.findAllRepairOrders();
+    }
+
+    @Override
+    public List<User> getAllMechanicsAccountInfo() {
+        // 获取所有角色为 'mechanic' 的用户信息
+        List<User> users = userMapper.findAllUsers();
+        return users.stream()
+                .filter(user -> "mechanic".equals(user.getRole()))
+                .peek(user -> user.setPassword(null)) // 移除密码
+                .collect(Collectors.toList());
     }
 }

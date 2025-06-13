@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.lw.vms.entity.User;
 
+import java.util.List;
+
 /**
  * @version 1.0
  * @auther Yongqi Wang
@@ -37,4 +39,24 @@ public interface UserMapper {
          * @return 影响的行数 (通常为 1 表示插入成功)
          */
         int insertUser(User user);
+
+        /**
+         * 查询所有用户。
+         * 供管理员等角色查询所有用户信息使用。
+         *
+         * @return 所有用户对象的列表
+         */
+        @Select("SELECT user_id, username, password, name, contact, role FROM user")
+        List<User> findAllUsers();
+
+        /**
+         * 根据用户 ID 查询用户信息。
+         * 用于获取特定用户的详细信息。
+         *
+         * @param userId 用户 ID
+         * @return 对应的用户对象，如果不存在则返回 null
+         */
+        @Select("SELECT user_id, username, password, name, contact, role FROM user WHERE user_id = #{userId}")
+        User findById(Integer userId);
+
 }
