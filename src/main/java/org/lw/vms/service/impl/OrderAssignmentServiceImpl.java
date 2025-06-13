@@ -45,6 +45,7 @@ public class OrderAssignmentServiceImpl implements OrderAssignmentService {
     @Override
     @Transactional
     public OrderAssignment createOrderAssignment(Integer orderId, Integer mechanicId) {
+        System.out.println(orderId + ", " + mechanicId);
         OrderAssignment newAssignment = new OrderAssignment();
         newAssignment.setOrderId(orderId);
         newAssignment.setMechanicId(mechanicId);

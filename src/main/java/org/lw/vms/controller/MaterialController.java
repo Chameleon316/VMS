@@ -75,8 +75,8 @@ public class MaterialController {
      * @return 统一响应结果
      */
     @PutMapping
-    public Result<Material> updateMaterial(@RequestBody Material material, HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader("Authorization");
+    public Result<Material> updateMaterial(@RequestBody Material material, @RequestHeader("Authorization") String token) {
+//        String token = httpServletRequest.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             return Result.fail(401, "Unauthorized: Missing or invalid JWT");
         }

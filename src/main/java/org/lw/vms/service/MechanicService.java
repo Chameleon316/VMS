@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface MechanicService {
 
+    Mechanic getMechanicDetailsById(Integer mechanicId);
+
     /**
      * 根据用户ID获取维修人员的详细信息 (含工种、时薪)。
      * @param userId 用户 ID

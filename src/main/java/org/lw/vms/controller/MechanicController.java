@@ -132,19 +132,21 @@ public class MechanicController {
     public Result<Mechanic> updateMechanicInfo(
             @PathVariable Integer mechanicId,
             @RequestParam String specialty,
-            @RequestParam BigDecimal hourlyRate,
-            HttpServletRequest request
+            @RequestParam BigDecimal hourlyRate,            @RequestHeader("Authorization") String token
     ) {
-        String token = request.getHeader("Authorization");
+//        String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             return Result.fail(401, "未授权：缺少或无效的JWT");
         }
+        System.out.println(mechanicId);
         String jwt = token.substring(7);
         Claims claims = jwtUtil.extractAllClaims(jwt);
-        Integer currentUserId = claims.get("userId", Integer.class);
+//        Integer currentUserId = claims.get("userId", Integer.class);
         String currentUserRole = claims.get("role", String.class);
+        Integer currentUserId = mechanicId;
 
-        Mechanic mechanic = mechanicService.getMechanicDetailsByUserId(currentUserId);
+        Mechanic mechanic = mechanicService.getMechanicDetailsById(currentUserId);
+        System.out.println(mechanic);
         if (mechanic == null || (!mechanicId.equals(mechanic.getMechanicId()) && !"admin".equals(currentUserRole))) {
             return Result.fail(403, "无权限更新此维修人员的信息");
         }

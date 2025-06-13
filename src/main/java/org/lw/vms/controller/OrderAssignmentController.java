@@ -78,8 +78,8 @@ public class OrderAssignmentController {
     public Result<OrderAssignment> createOrderAssignment(
             @RequestParam Integer orderId,
             @RequestParam Integer mechanicId,
-            HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader("Authorization");
+            @RequestHeader("Authorization") String token) {
+//        String token = httpServletRequest.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             return Result.fail(401, "Unauthorized: Missing or invalid JWT");
         }

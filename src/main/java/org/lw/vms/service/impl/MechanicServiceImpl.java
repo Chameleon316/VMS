@@ -33,6 +33,9 @@ public class MechanicServiceImpl implements MechanicService {
         return mechanicMapper.findByUserId(userId);
     }
 
+    public Mechanic getMechanicDetailsById(Integer mechanicId) {
+        return mechanicMapper.findById(mechanicId);
+    }
     @Override
     public List<RepairOrder> getMechanicRepairOrders(Integer mechanicId) {
         // 查询该维修人员所有相关的工单分配记录
