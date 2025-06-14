@@ -42,8 +42,8 @@ public class FeedbackController {
      * @return 统一响应结果
      */
     @PostMapping
-    public Result<Feedback> createFeedback(@RequestBody FeedbackRequest request, HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader("Authorization");
+    public Result<Feedback> createFeedback(@RequestBody FeedbackRequest request, @RequestHeader("Authorization") String token) {
+//        String token = httpServletRequest.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             return Result.fail(401, "Unauthorized: Missing or invalid JWT");
         }
@@ -78,8 +78,8 @@ public class FeedbackController {
      * @return 统一响应结果
      */
     @GetMapping("/byOrder/{orderId}")
-    public Result<Feedback> getFeedbackByOrderId(@PathVariable Integer orderId, HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader("Authorization");
+    public Result<Feedback> getFeedbackByOrderId(@PathVariable Integer orderId, @RequestHeader("Authorization") String token) {
+//        String token = httpServletRequest.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             return Result.fail(401, "Unauthorized: Missing or invalid JWT");
         }
