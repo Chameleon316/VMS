@@ -1,5 +1,6 @@
 package org.lw.vms.service.impl;
 
+import org.lw.vms.DTOs.MechanicAssignmentsResponse;
 import org.lw.vms.entity.Mechanic;
 import org.lw.vms.entity.OrderAssignment;
 import org.lw.vms.entity.RepairOrder;
@@ -36,6 +37,7 @@ public class MechanicServiceImpl implements MechanicService {
     public Mechanic getMechanicDetailsById(Integer mechanicId) {
         return mechanicMapper.findById(mechanicId);
     }
+
     @Override
     public List<RepairOrder> getMechanicRepairOrders(Integer mechanicId) {
         // 查询该维修人员所有相关的工单分配记录
@@ -46,6 +48,11 @@ public class MechanicServiceImpl implements MechanicService {
                 .map(assignment -> repairOrderMapper.findById(assignment.getOrderId()))
                 .filter(java.util.Objects::nonNull) // 过滤掉可能为空的工单
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public Mechanic gerMechanicDerailsByMechanicId(Integer mechanicId) {
+        return mechanicMapper.findById(mechanicId);
     }
 
     @Override
@@ -63,7 +70,7 @@ public class MechanicServiceImpl implements MechanicService {
 
         for (OrderAssignment assignment : assignments) {
             // 只计算已接受的工单分配，并且有工作小时数
-            if ("accepted".equals(assignment.getStatus()) && assignment.getHoursWorked() != null) {
+            if ("completed".equals(assignment.getStatus()) && assignment.getHoursWorked() != null) {
                 BigDecimal laborCost = hourlyRate.multiply(assignment.getHoursWorked());
                 totalIncome = totalIncome.add(laborCost);
             }
@@ -81,5 +88,10 @@ public class MechanicServiceImpl implements MechanicService {
         mechanic.setHourlyRate(hourlyRate);
         int rowsAffected = mechanicMapper.updateMechanic(mechanic);
         return rowsAffected > 0 ? mechanic : null;
+    }
+
+    @Override
+    public List<MechanicAssignmentsResponse> getAssignmentsByMechanicId(Integer mechanicId) {
+        return orderAssignmentMapper.getAssignmentsByMechanicId(mechanicId);
     }
 }

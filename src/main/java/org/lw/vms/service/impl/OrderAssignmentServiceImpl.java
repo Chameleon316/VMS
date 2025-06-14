@@ -5,6 +5,7 @@ package org.lw.vms.service.impl;
  * @auther Yongqi Wang
  */
 import org.lw.vms.DTOs.OrderAssignmentUpdateRequest;
+import org.lw.vms.DTOs.UpdateWorkingHourRequest;
 import org.lw.vms.entity.OrderAssignment;
 import org.lw.vms.mapper.OrderAssignmentMapper;
 import org.lw.vms.service.OrderAssignmentService;
@@ -53,5 +54,25 @@ public class OrderAssignmentServiceImpl implements OrderAssignmentService {
 
         int rowsAffected = orderAssignmentMapper.insertOrderAssignment(newAssignment);
         return rowsAffected > 0 ? newAssignment : null;
+    }
+
+    @Override
+    public OrderAssignment acceptByMechanic(Integer assignmentId) {
+        return orderAssignmentMapper.acceptByMechanic(assignmentId);
+    }
+
+    @Override
+    public List<OrderAssignment> getAllAssignmentsByOrderId(Integer orderId){
+        return orderAssignmentMapper.findByOrderId(orderId);
+    }
+
+    @Override
+    public int updateWorkingTime(UpdateWorkingHourRequest request){
+        return orderAssignmentMapper.updateWorkingTime(request);
+    }
+
+    @Override
+    public OrderAssignment getAllAssignmentsByAssignmentId(Integer assignmentId){
+        return orderAssignmentMapper.findByAssignmentId(assignmentId);
     }
 }

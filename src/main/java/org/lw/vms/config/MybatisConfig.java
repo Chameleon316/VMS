@@ -1,7 +1,7 @@
 package org.lw.vms.config;
 
-/**
- * @version 1.0
+/*
+  @version 1.0
  * @auther Yongqi Wang
  */
 
@@ -17,12 +17,4 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("org.lw.vms.mapper") // 扫描指定包下的 Mybatis Mapper 接口，使其能够被 Spring 管理
 @EnableTransactionManagement // 启用 Spring 的声明式事务管理，使得 @Transactional 注解生效
 public class MybatisConfig {
-
-    /**
-     * 配置并提供 BCryptPasswordEncoder 的 Bean。
-     * BCryptPasswordEncoder 是一种密码哈希函数，用于安全地存储和验证用户密码。
-     * Spring 会自动在需要 PasswordEncoder 的地方注入此 Bean。
-     *
-     * @return BCryptPasswordEncoder 实例
-     */
 }

@@ -29,6 +29,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
         repairOrder.setUserId(request.getUserId());
         repairOrder.setDatetime(new Date()); // 设置当前时间为报修时间
         repairOrder.setStatus("pending"); // 初始状态为待处理
+        repairOrder.setDescription(request.getDescription());
 
         int rowsAffected = repairOrderMapper.insertRepairOrder(repairOrder);
         return rowsAffected > 0 ? repairOrder : null;
@@ -90,5 +91,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
         existingOrder.setStatus(status);
         int rowsAffected = repairOrderMapper.updateRepairOrder(existingOrder);
         return rowsAffected > 0 ? existingOrder : null;
+    }
+
+    @Override
+    public void updateFinalRepairOrder(RepairOrder repairOrder) {
+       repairOrderMapper.updateFinalRepairOrder(repairOrder);
     }
 }

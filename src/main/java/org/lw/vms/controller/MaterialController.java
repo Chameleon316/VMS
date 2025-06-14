@@ -5,9 +5,11 @@ package org.lw.vms.controller;
  * @auther Yongqi Wang
  */
 import io.jsonwebtoken.Claims;
+import org.lw.vms.DTOs.MaterialConsumptionForAssignRequest;
 import org.lw.vms.DTOs.MaterialConsumptionRequest;
 import org.lw.vms.entity.Material;
 import org.lw.vms.entity.MaterialConsumption;
+import org.lw.vms.entity.MaterialConsumptionForAssignment;
 import org.lw.vms.service.MaterialConsumptionService;
 import org.lw.vms.service.MaterialService;
 import org.lw.vms.service.RepairOrderService;
@@ -227,5 +229,34 @@ public class MaterialController {
             return Result.success(material, "Material fetched successfully");
         }
         return Result.fail("Material not found");
+    }
+
+    @PostMapping("/consumption")
+    public Result<MaterialConsumptionForAssignment> recordMaterialConsumptionToAssignment(@RequestBody MaterialConsumptionForAssignRequest request, @RequestHeader("Authorization") String token) {
+//        String token = httpServletRequest.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail(401, "Unauthorized: Missing or invalid JWT");
+        }
+        String jwt = token.substring(7);
+        Claims claims = jwtUtil.extractAllClaims(jwt);
+        String role = claims.get("role", String.class);
+
+        if (!"mechanic".equals(role) && !"admin".equals(role)) {
+            return Result.fail(403, "Forbidden: Only mechanics or admins can record material consumption");
+        }
+
+        MaterialConsumptionForAssignment newConsumption = materialConsumptionService.recordMaterialConsumptionToAssignment(request);
+        if (newConsumption != null) {
+            Material material = materialService.getMaterialById(request.getMaterialId());
+            material.setStockQuantity(material.getStockQuantity() - request.getQuantity());
+            materialService.updateMaterial(material);
+            return Result.success(newConsumption, "Material consumption recorded successfully");
+        }
+        return Result.fail("Failed to record material consumption");
+    }
+
+    @GetMapping("consumption/{assignmentId}")
+    public Result<List<MaterialConsumptionForAssignment>> getMaterialConsumptionById(@PathVariable Long assignmentId) {
+        return Result.success(materialConsumptionService.getMaterialConsumptionByAssignmentId(assignmentId), "Material consumption retrieved successfully");
     }
 }

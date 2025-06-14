@@ -1,6 +1,8 @@
 package org.lw.vms.mapper;
 
 import org.apache.ibatis.annotations.*;
+import org.lw.vms.DTOs.MechanicAssignmentsResponse;
+import org.lw.vms.DTOs.UpdateWorkingHourRequest;
 import org.lw.vms.entity.OrderAssignment;
 
 import java.util.List;
@@ -61,4 +63,32 @@ public interface OrderAssignmentMapper {
      */
     @Delete("DELETE FROM order_assignment WHERE assignment_id = #{assignmentId}")
     int deleteOrderAssignment(Integer assignmentId);
+
+    @Update("UPDATE order_assignment SET status = 'accepted' WHERE assignment_id = #{assignmentId}")
+    OrderAssignment acceptByMechanic(Integer assignmentId);
+
+    @Select("SELECT " +
+            "ro.order_id AS orderId, " +
+            "ro.vehicle_id AS vehicleId, " +
+            "ro.user_id AS userId, " +
+            "ro.create_time AS datetime, " +
+            "ro.status AS orderStatus, " +
+            "ro.total_material_cost AS totalMaterialCost, " +
+            "ro.total_labor_cost AS totalLaborCost, " +
+            "ro.completion_time AS completionTime, " +
+            "ro.description AS description, " +
+            "oa.assignment_id AS assignmentId, " +
+            "oa.mechanic_id AS mechanicId, " +
+            "oa.hours_worked AS hoursWorked, " +
+            "oa.status AS assignmentStatus " +
+            "FROM repair_order ro " +
+            "JOIN order_assignment oa ON ro.order_id = oa.order_id " +
+            "WHERE oa.mechanic_id = #{mechanicId}")
+    List<MechanicAssignmentsResponse> getAssignmentsByMechanicId(Integer mechanicId);
+
+    @Update("UPDATE order_assignment SET status = 'completed',hours_worked = #{workingHour} WHERE assignment_id = #{assignmentId}")
+    int updateWorkingTime(UpdateWorkingHourRequest request);
+
+    @Select("SELECT * FROM order_assignment WHERE assignment_id = #{assignmentId}")
+    OrderAssignment findByAssignmentId(Integer assignmentId);
 }

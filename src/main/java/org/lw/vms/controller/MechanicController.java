@@ -5,6 +5,7 @@ package org.lw.vms.controller;
  * @auther Yongqi Wang
  */
 import io.jsonwebtoken.Claims;
+import org.lw.vms.DTOs.MechanicAssignmentsResponse;
 import org.lw.vms.entity.Mechanic;
 import org.lw.vms.entity.RepairOrder;
 import org.lw.vms.service.MechanicService;
@@ -160,5 +161,27 @@ public class MechanicController {
         }
         return Result.fail("维修人员信息更新失败");
     }
+
+    @GetMapping("/{mechanicId}/assignments")
+    public Result<List<MechanicAssignmentsResponse>> getMechanicAssignments(@PathVariable Integer mechanicId, @RequestHeader("Authorization") String token) {
+//        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail(401, "未授权：缺少或无效的JWT");
+        }
+        String jwt = token.substring(7);
+        Claims claims = jwtUtil.extractAllClaims(jwt);
+        Integer currentUserId = claims.get("userId", Integer.class);
+        String currentUserRole = claims.get("role", String.class);
+
+        // 获取该 mechanicId 对应的 user_id，以便进行权限校验
+        Mechanic mechanic = mechanicService.getMechanicDetailsByUserId(currentUserId); // 注意这里用 currentUserId 获取当前登录的维修人员信息
+        if (mechanic == null || (!mechanicId.equals(mechanic.getMechanicId()) && !"admin".equals(currentUserRole))) {
+            return Result.fail(403, "无权限查询此维修人员的工单");
+        }
+
+        List<MechanicAssignmentsResponse> assignments = mechanicService.getAssignmentsByMechanicId(mechanicId);
+        return Result.success(assignments, "查询维修分配工单成功");
+    }
+
 }
 

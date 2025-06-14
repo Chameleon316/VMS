@@ -16,7 +16,7 @@ public interface RepairOrderMapper {
      * @param orderId 工单 ID
      * @return 维修工单对象
      */
-    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time FROM repair_order WHERE order_id = #{orderId}")
+    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description FROM repair_order WHERE order_id = #{orderId}")
     RepairOrder findById(Integer orderId);
 
     /**
@@ -24,7 +24,7 @@ public interface RepairOrderMapper {
      * @param userId 用户 ID
      * @return 维修工单列表
      */
-    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time FROM repair_order WHERE user_id = #{userId}")
+    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description FROM repair_order WHERE user_id = #{userId}")
     List<RepairOrder> findByUserId(Integer userId);
 
     /**
@@ -32,7 +32,7 @@ public interface RepairOrderMapper {
      * @param vehicleId 车辆 ID
      * @return 维修工单列表
      */
-    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time FROM repair_order WHERE vehicle_id = #{vehicleId}")
+    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description FROM repair_order WHERE vehicle_id = #{vehicleId}")
     List<RepairOrder> findByVehicleId(Integer vehicleId);
 
     /**
@@ -40,7 +40,7 @@ public interface RepairOrderMapper {
      * @param status 工单状态
      * @return 维修工单列表
      */
-    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time FROM repair_order WHERE status = #{status}")
+    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description FROM repair_order WHERE status = #{status}")
     List<RepairOrder> findByStatus(String status);
 
     /**
@@ -48,8 +48,8 @@ public interface RepairOrderMapper {
      * @param repairOrder 维修工单对象
      * @return 影响的行数
      */
-    @Insert("INSERT INTO repair_order(vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time) " +
-            "VALUES(#{vehicleId}, #{userId}, #{datetime}, #{status}, #{totalMaterialCost}, #{totalLaborCost}, #{completionTime})")
+    @Insert("INSERT INTO repair_order(vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description) " +
+            "VALUES(#{vehicleId}, #{userId}, #{datetime}, #{status}, #{totalMaterialCost}, #{totalLaborCost}, #{completionTime}, #{description})")
     @Options(useGeneratedKeys = true, keyProperty = "orderId")
     int insertRepairOrder(RepairOrder repairOrder);
 
@@ -75,7 +75,7 @@ public interface RepairOrderMapper {
      * 查询所有维修工单 (管理员用)。
      * @return 所有维修工单的列表
      */
-    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time FROM repair_order")
+    @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description FROM repair_order")
     List<RepairOrder> findAllRepairOrders();
 
     /**
@@ -85,9 +85,17 @@ public interface RepairOrderMapper {
      * @return 维修工单列表
      */
     @Select("SELECT ro.order_id, ro.vehicle_id, ro.user_id, ro.create_time, ro.status, " +
-            "ro.total_material_cost, ro.total_labor_cost, ro.completion_time " +
+            "ro.total_material_cost, ro.total_labor_cost, ro.completion_time,ro.description " +
             "FROM repair_order ro " +
             "JOIN order_assignment oa ON ro.order_id = oa.order_id " +
             "WHERE oa.mechanic_id = #{mechanicId}")
     List<RepairOrder> findRepairOrdersByMechanicId(Integer mechanicId);
+
+
+    /**
+     * 更新维修工单的最终信息，包括总材料成本、总人工成本和完成时间。
+     * @param repairOrder 维修工单对象
+     */
+    @Update("UPDATE repair_order SET status = #{status},total_material_cost = #{totalMaterialCost}, total_labor_cost = #{totalLaborCost}, completion_time = #{completionTime} WHERE order_id = #{orderId}")
+    void updateFinalRepairOrder(RepairOrder repairOrder);
 }

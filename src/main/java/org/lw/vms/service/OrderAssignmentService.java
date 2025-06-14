@@ -5,6 +5,7 @@ package org.lw.vms.service;
  * @auther Yongqi Wang
  */
 import org.lw.vms.DTOs.OrderAssignmentUpdateRequest;
+import org.lw.vms.DTOs.UpdateWorkingHourRequest;
 import org.lw.vms.entity.OrderAssignment;
 
 import java.util.List;
@@ -38,4 +39,12 @@ public interface OrderAssignmentService {
      * @return 创建成功的工单分配对象
      */
     OrderAssignment createOrderAssignment(Integer orderId, Integer mechanicId);
+
+    OrderAssignment acceptByMechanic(Integer assignmentId);
+
+    List<OrderAssignment> getAllAssignmentsByOrderId(Integer orderId);
+
+    int updateWorkingTime(UpdateWorkingHourRequest request);
+
+    OrderAssignment getAllAssignmentsByAssignmentId(Integer assignmentId);
 }
