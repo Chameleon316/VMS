@@ -4,8 +4,10 @@ package org.lw.vms.service.impl;
  * @version 1.0
  * @auther Yongqi Wang
  */
+import org.lw.vms.DTOs.MaterialConsumptionForAssignRequest;
 import org.lw.vms.DTOs.MaterialConsumptionRequest;
 import org.lw.vms.entity.MaterialConsumption;
+import org.lw.vms.entity.MaterialConsumptionForAssignment;
 import org.lw.vms.mapper.MaterialConsumptionMapper;
 import org.lw.vms.service.MaterialConsumptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +37,22 @@ public class MaterialConsumptionServiceImpl implements MaterialConsumptionServic
     @Override
     public List<MaterialConsumption> getMaterialConsumptionsByOrderId(Integer orderId) {
         return materialConsumptionMapper.findByOrderId(orderId);
+    }
+
+    @Override
+    public MaterialConsumptionForAssignment recordMaterialConsumptionToAssignment(MaterialConsumptionForAssignRequest request) {
+        MaterialConsumptionForAssignment consumption = new MaterialConsumptionForAssignment();
+        consumption.setAssignmentId(request.getAssignmentId());
+        consumption.setMaterialId(request.getMaterialId());
+        consumption.setQuantity(request.getQuantity());
+
+        int rowsAffected = materialConsumptionMapper.insertMaterialConsumptionToAssignment(consumption);
+        return rowsAffected > 0 ? consumption : null;
+
+    }
+
+    @Override
+    public List<MaterialConsumptionForAssignment> getMaterialConsumptionByAssignmentId(Long assignmentId) {
+        return materialConsumptionMapper.findByAssignmentId(assignmentId);
     }
 }

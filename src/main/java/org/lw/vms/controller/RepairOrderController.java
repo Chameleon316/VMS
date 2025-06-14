@@ -38,7 +38,6 @@ public class RepairOrderController {
      */
     @PostMapping
     public Result<RepairOrder> createRepairOrder(@RequestBody RepairOrderRequest request, @RequestHeader("Authorization") String token) {
-//        String token = httpServletRequest.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             return Result.fail(401, "Unauthorized: Missing or invalid JWT");
         }

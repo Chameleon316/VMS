@@ -4,6 +4,9 @@ package org.lw.vms.DTOs;
  * @version 1.0
  * @auther Yongqi Wang
  */
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.math.BigDecimal; // 引入 BigDecimal
 import java.util.Date; // 引入 Date
@@ -12,6 +15,8 @@ import java.util.Date; // 引入 Date
  * 维修工单请求数据传输对象。
  * 用于用户提交报修或维修人员更新工单。
  */
+@Getter
+@Setter
 public class RepairOrderRequest implements Serializable {
     private Integer orderId; // 更新时使用
     private Integer vehicleId;
@@ -20,6 +25,8 @@ public class RepairOrderRequest implements Serializable {
     private BigDecimal totalMaterialCost; // 维修人员更新时使用
     private BigDecimal totalLaborCost;    // 维修人员更新时使用
     private Date completionTime; // 维修人员完成工单时使用
+    private String description; // 用户提交报修时使用
+
 
     // Getter and Setter
     public Integer getOrderId() {
@@ -76,5 +83,13 @@ public class RepairOrderRequest implements Serializable {
 
     public void setCompletionTime(Date completionTime) {
         this.completionTime = completionTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

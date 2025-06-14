@@ -58,4 +58,6 @@ public interface RepairOrderService {
      * @return 更新后的工单对象
      */
     RepairOrder updateRepairOrderStatus(Integer orderId, String status);
+
+    void updateFinalRepairOrder(RepairOrder repairOrder);
 }

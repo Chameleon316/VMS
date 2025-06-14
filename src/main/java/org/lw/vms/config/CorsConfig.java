@@ -1,7 +1,7 @@
 package org.lw.vms.config;
 
-/**
- * @version 1.0
+/*
+  @version 1.0
  * @auther Yongqi Wang
  */
 import org.springframework.context.annotation.Bean;

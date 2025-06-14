@@ -1,5 +1,6 @@
 package org.lw.vms.service;
 
+import org.lw.vms.DTOs.MechanicAssignmentsResponse;
 import org.lw.vms.entity.Mechanic;
 import org.lw.vms.entity.RepairOrder;
 
@@ -20,6 +21,8 @@ public interface MechanicService {
      * @return 维修人员对象
      */
     Mechanic getMechanicDetailsByUserId(Integer userId);
+
+    Mechanic gerMechanicDerailsByMechanicId(Integer mechanicId);
 
     /**
      * 根据维修人员ID查询其当前和历史维修工单。
@@ -44,4 +47,5 @@ public interface MechanicService {
      */
     Mechanic updateMechanicInfo(Integer mechanicId, String specialty, BigDecimal hourlyRate);
 
+    List<MechanicAssignmentsResponse> getAssignmentsByMechanicId(Integer mechanicId);
 }

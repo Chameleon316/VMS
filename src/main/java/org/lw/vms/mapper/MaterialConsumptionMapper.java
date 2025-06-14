@@ -2,6 +2,7 @@ package org.lw.vms.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.lw.vms.entity.MaterialConsumption;
+import org.lw.vms.entity.MaterialConsumptionForAssignment;
 
 import java.util.List;
 
@@ -51,4 +52,10 @@ public interface MaterialConsumptionMapper {
      */
     @Delete("DELETE FROM material_consumption WHERE consumption_id = #{consumptionId}")
     int deleteMaterialConsumption(Integer consumptionId);
+
+    @Insert("INSERT INTO assignment_consumption(assignment_id, material_id, quantity) VALUES(#{assignmentId}, #{materialId}, #{quantity})")
+    int insertMaterialConsumptionToAssignment(MaterialConsumptionForAssignment consumption);
+
+    @Select("SELECT * FROM assignment_consumption WHERE assignment_id = #{assignmentId}")
+    List<MaterialConsumptionForAssignment> findByAssignmentId(Long assignmentId);
 }

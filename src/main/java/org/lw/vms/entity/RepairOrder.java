@@ -1,4 +1,7 @@
 package org.lw.vms.entity;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -6,6 +9,8 @@ import java.util.Date;
 /**
  * 维修工单实体类，对应数据库中的 'repair_order' 表。
  */
+@Getter
+@Setter
 public class RepairOrder implements Serializable {
     private Integer orderId;       // 对应 order_id，主键
     private Integer vehicleId;     // 对应 vehicle_id，关联车辆表
@@ -16,6 +21,7 @@ public class RepairOrder implements Serializable {
     private BigDecimal totalMaterialCost; // 对应 total_material_cost，总材料费
     private BigDecimal totalLaborCost;    // 对应 total_labor_cost，总工时费
     private Date completionTime;   // 对应 completion_time，完成时间
+    private String description;    // 对应 description，描述信息
 
     public RepairOrder() {
     }
@@ -84,6 +90,14 @@ public class RepairOrder implements Serializable {
         this.completionTime = completionTime;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "RepairOrder{" +
@@ -95,6 +109,7 @@ public class RepairOrder implements Serializable {
                 ", totalMaterialCost=" + totalMaterialCost +
                 ", totalLaborCost=" + totalLaborCost +
                 ", completionTime=" + completionTime +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
