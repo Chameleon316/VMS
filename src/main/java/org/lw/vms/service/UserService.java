@@ -86,4 +86,6 @@ public interface UserService {
      * @return 所有维修人员列表
      */
     List<User> getAllMechanicsAccountInfo(); // 获取维修人员的用户信息 (User)
+
+    void deleteUser(Integer id);
 }

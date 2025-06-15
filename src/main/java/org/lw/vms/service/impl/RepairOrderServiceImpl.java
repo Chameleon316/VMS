@@ -97,4 +97,19 @@ public class RepairOrderServiceImpl implements RepairOrderService {
     public void updateFinalRepairOrder(RepairOrder repairOrder) {
        repairOrderMapper.updateFinalRepairOrder(repairOrder);
     }
+
+    @Override
+    public void setUrged(Integer orderId, Boolean urge) {
+        repairOrderMapper.setUrged(orderId, urge);
+    }
+
+    @Override
+    public List<RepairOrder> getUrgedOrders() {
+        return repairOrderMapper.getUrgedOrders();
+    }
+
+    @Override
+    public boolean deleteRepairOrder(Integer orderId) {
+        return repairOrderMapper.deleteRepairOrder(orderId) > 0;
+    }
 }

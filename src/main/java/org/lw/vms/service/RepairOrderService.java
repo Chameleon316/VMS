@@ -60,4 +60,10 @@ public interface RepairOrderService {
     RepairOrder updateRepairOrderStatus(Integer orderId, String status);
 
     void updateFinalRepairOrder(RepairOrder repairOrder);
+
+    void setUrged(Integer orderId, Boolean urge);
+
+    List<RepairOrder> getUrgedOrders();
+
+    boolean deleteRepairOrder(Integer id);
 }

@@ -134,7 +134,7 @@ public class RepairOrderController {
      * @param httpServletRequest 用于获取 Authorization 头
      * @return 统一响应结果
      */
-    @PatchMapping("/{orderId}/urge")
+    @PostMapping("/{orderId}/urge")
     public Result<RepairOrder> urgeRepairOrder(@PathVariable Integer orderId, @RequestHeader("Authorization") String token) {
 //        String token = httpServletRequest.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
@@ -160,10 +160,35 @@ public class RepairOrderController {
 
         // 催单逻辑：这里简单地将状态更新为 'in_progress' 或其他自定义的催单状态
         // 实际中可能需要更复杂的逻辑，例如发送通知、优先级提升等
-        RepairOrder updatedOrder = repairOrderService.updateRepairOrderStatus(orderId, "in_progress"); // 示例：更新为进行中
+        repairOrderService.setUrged(orderId, true);// 示例：更新为进行中
+        RepairOrder updatedOrder = repairOrderService.getRepairOrderById(orderId);
         if (updatedOrder != null) {
             return Result.success(updatedOrder, "Repair order urged successfully. Status updated to 'in_progress'.");
         }
         return Result.fail("Failed to urge repair order");
+    }
+
+    @GetMapping("/urgedOrder")
+    public Result<List<RepairOrder>> getUrgedOrders(@RequestHeader("Authorization") String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            return Result.fail(401, "Unauthorized: Missing or invalid JWT");
+        }
+        String jwt = token.substring(7);
+        Claims claims = jwtUtil.extractAllClaims(jwt);
+        Integer userId = claims.get("userId", Integer.class);
+        String role = claims.get("role", String.class);
+        if (!"admin".equals(role)) {
+            return Result.fail(403, "Forbidden: Only admins can view urged orders");
+        }
+        List<RepairOrder> urgedOrders = repairOrderService.getUrgedOrders();
+        return Result.success(urgedOrders, "Urged orders retrieved successfully");
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Result<String> deleteRepairOrder(@PathVariable("id") Integer id) {
+        if (repairOrderService.deleteRepairOrder(id))
+            return Result.success("Repair order with id " + id + " deleted successfully");
+        else
+            return Result.fail(404, "Repair order with id " + id + " not found");
     }
 }

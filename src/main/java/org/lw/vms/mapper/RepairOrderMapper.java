@@ -98,4 +98,10 @@ public interface RepairOrderMapper {
      */
     @Update("UPDATE repair_order SET status = #{status},total_material_cost = #{totalMaterialCost}, total_labor_cost = #{totalLaborCost}, completion_time = #{completionTime} WHERE order_id = #{orderId}")
     void updateFinalRepairOrder(RepairOrder repairOrder);
+
+    @Update("UPDATE repair_order SET urged = #{urge} WHERE order_id = #{orderId}")
+    void setUrged(Integer orderId, Boolean urge);
+
+    @Select("SELECT * FROM repair_order WHERE urged = true")
+    List<RepairOrder> getUrgedOrders();
 }

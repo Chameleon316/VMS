@@ -166,36 +166,40 @@ public class OrderAssignmentController {
         if (i == 1){
             OrderAssignment assignment = orderAssignmentService.getAllAssignmentsByAssignmentId(request.assignmentId());
             List<OrderAssignment> assignments = orderAssignmentService.getAllAssignmentsByOrderId(assignment.getOrderId());
-            if (assignments != null){
-                boolean finished = true;
-                for (OrderAssignment orderAssignment : assignments){
-                    if (!Objects.equals(orderAssignment.getStatus(), "completed")) {
-                        finished = false;
-                        break;
+            List<OrderAssignment> assignmentsNotRejected = new ArrayList<>();
+            for(OrderAssignment orderAssignment : assignments){
+                if(!Objects.equals(orderAssignment.getStatus(), "rejected")){
+                    assignmentsNotRejected.add(orderAssignment);
+                }
+            }
+            boolean finished = true;
+            for (OrderAssignment orderAssignment : assignmentsNotRejected){
+                if (!Objects.equals(orderAssignment.getStatus(), "completed")) {
+                    finished = false;
+                    break;
+                }
+            }
+            if(finished){
+                BigDecimal totalWorkingCost = BigDecimal.valueOf(0);
+                BigDecimal totalMaterialCost = BigDecimal.valueOf(0);
+                List<Mechanic> mechanics = new ArrayList<>();
+                List<MaterialConsumptionForAssignment> consumptions = new ArrayList<>();
+                for (OrderAssignment orderAssignment : assignmentsNotRejected){
+                    Mechanic mechanic = mechanicService.getMechanicDetailsById(orderAssignment.getMechanicId());
+                    mechanics.add(mechanic);
+                    totalWorkingCost = totalWorkingCost.add(orderAssignment.getHoursWorked().multiply(mechanic.getHourlyRate()));
+                    consumptions = materialConsumptionService.getMaterialConsumptionByAssignmentId(orderAssignment.getAssignmentId().longValue());
+                    for (MaterialConsumptionForAssignment consumption : consumptions){
+                        Material material = materialService.getMaterialById(consumption.getMaterialId());
+                        totalMaterialCost = totalMaterialCost.add(material.getUnitPrice().multiply(BigDecimal.valueOf(consumption.getQuantity())));
                     }
                 }
-                if(finished){
-                    BigDecimal totalWorkingCost = BigDecimal.valueOf(0);
-                    BigDecimal totalMaterialCost = BigDecimal.valueOf(0);
-                    List<Mechanic> mechanics = new ArrayList<>();
-                    List<MaterialConsumptionForAssignment> consumptions = new ArrayList<>();
-                    for (OrderAssignment orderAssignment : assignments){
-                        Mechanic mechanic = mechanicService.getMechanicDetailsById(orderAssignment.getMechanicId());
-                        mechanics.add(mechanic);
-                        totalWorkingCost = totalWorkingCost.add(orderAssignment.getHoursWorked().multiply(mechanic.getHourlyRate()));
-                        consumptions = materialConsumptionService.getMaterialConsumptionByAssignmentId(orderAssignment.getAssignmentId().longValue());
-                        for (MaterialConsumptionForAssignment consumption : consumptions){
-                            Material material = materialService.getMaterialById(consumption.getMaterialId());
-                            totalMaterialCost = totalMaterialCost.add(material.getUnitPrice().multiply(BigDecimal.valueOf(consumption.getQuantity())));
-                        }
-                    }
-                    RepairOrder repairOrder = repairOrderService.getRepairOrderById(assignment.getOrderId());
-                    repairOrder.setTotalMaterialCost(totalMaterialCost);
-                    repairOrder.setTotalLaborCost(totalWorkingCost);
-                    repairOrder.setCompletionTime(new Date());
-                    repairOrder.setStatus("completed");
-                    repairOrderService.updateFinalRepairOrder(repairOrder);
-                }
+                RepairOrder repairOrder = repairOrderService.getRepairOrderById(assignment.getOrderId());
+                repairOrder.setTotalMaterialCost(totalMaterialCost);
+                repairOrder.setTotalLaborCost(totalWorkingCost);
+                repairOrder.setCompletionTime(new Date());
+                repairOrder.setStatus("completed");
+                repairOrderService.updateFinalRepairOrder(repairOrder);
             }
             return Result.success(assignment,"Update working time successfully");
         }

@@ -1,9 +1,6 @@
 package org.lw.vms.mapper;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.lw.vms.entity.User;
 
 import java.util.List;
@@ -59,4 +56,6 @@ public interface UserMapper {
         @Select("SELECT user_id, username, password, name, contact, role FROM user WHERE user_id = #{userId}")
         User findById(Integer userId);
 
+        @Delete("DELETE FROM user WHERE user_id = #{id}")
+        void deleteUser(Integer id);
 }

@@ -291,4 +291,10 @@ public class UserController {
         return Result.success(vehicles, "查询所有车辆成功");
     }
 
+    @DeleteMapping("/admin/delete/{id}")
+    public Result<String> deleteUser(@PathVariable("id") Integer id) {
+        userService.deleteUser(id);
+        return Result.success("删除用户成功");
+    }
+
 }
