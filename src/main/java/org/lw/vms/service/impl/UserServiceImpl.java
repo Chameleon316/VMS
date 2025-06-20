@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
             mechanic.setUserId(newUser.getUserId());
             mechanic.setSpecialty("待分配");
             mechanic.setHourlyRate(BigDecimal.ZERO);
+            //int s = 1/0;
             int rowsAffected1 = mechanicMapper.insertMechanic(mechanic);
         }
 

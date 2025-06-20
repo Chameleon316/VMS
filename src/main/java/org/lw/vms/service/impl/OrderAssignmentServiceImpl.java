@@ -41,7 +41,7 @@ public class OrderAssignmentServiceImpl implements OrderAssignmentService {
             List<Mechanic> mechanics = mechanicMapper.getMechanicBySpecialty(mechanic.getSpecialty());
             if(!mechanics.isEmpty()){
                 Mechanic newMechanic = mechanics.get(new Random().nextInt(mechanics.size()));
-                createOrderAssignment(existingAssignment.getOrderId(), mechanic.getMechanicId());
+                createOrderAssignment(existingAssignment.getOrderId(), newMechanic.getMechanicId());
             }
         }
         return rowsAffected > 0 ? existingAssignment : null;

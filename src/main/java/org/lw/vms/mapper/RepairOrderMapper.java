@@ -25,6 +25,9 @@ public interface RepairOrderMapper {
      * @return 维修工单列表
      */
     @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description FROM repair_order WHERE user_id = #{userId}")
+    @Results({
+            @Result(property = "datetime", column = "create_time"),
+    })
     List<RepairOrder> findByUserId(Integer userId);
 
     /**
