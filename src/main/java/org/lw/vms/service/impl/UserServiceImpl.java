@@ -192,4 +192,9 @@ public class UserServiceImpl implements UserService {
                 .peek(user -> user.setPassword(null)) // 移除密码
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteUser(Integer id) {
+        userMapper.deleteUser(id);
+    }
 }
