@@ -76,6 +76,9 @@ public interface RepairOrderMapper {
      * @return 所有维修工单的列表
      */
     @Select("SELECT order_id, vehicle_id, user_id, create_time, status, total_material_cost, total_labor_cost, completion_time,description FROM repair_order")
+    @Results({
+            @Result(property = "datetime", column = "create_time"),
+    })
     List<RepairOrder> findAllRepairOrders();
 
     /**
