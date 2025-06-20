@@ -70,8 +70,8 @@ public class MechanicServiceImpl implements MechanicService {
 
         for (OrderAssignment assignment : assignments) {
             // 只计算已接受的工单分配，并且有工作小时数
-            if ("completed".equals(assignment.getStatus()) && assignment.getHoursWorked() != null) {
-                BigDecimal laborCost = hourlyRate.multiply(assignment.getHoursWorked());
+            if ("completed".equals(assignment.getStatus()) && assignment.getLaborCost() != null) {
+                BigDecimal laborCost = assignment.getLaborCost();
                 totalIncome = totalIncome.add(laborCost);
             }
         }

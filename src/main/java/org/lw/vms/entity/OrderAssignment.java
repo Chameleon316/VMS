@@ -18,6 +18,7 @@ public class OrderAssignment implements Serializable {
     private Integer mechanicId;   // 对应 mechanic_id，关联维修人员表
     private BigDecimal hoursWorked; // 对应 hours_worked，实际工作小时数
     private String status;        // 对应 status，分配状态 ENUM('accepted', 'rejected')
+    private BigDecimal laborCost; // 对应 labor_cost，工时费用
 
     public OrderAssignment() {
     }
@@ -71,6 +72,14 @@ public class OrderAssignment implements Serializable {
                 ", hoursWorked=" + hoursWorked +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    public BigDecimal getLaborCost() {
+        return laborCost;
+    }
+
+    public void setLaborCost(BigDecimal laborCost) {
+        this.laborCost = laborCost;
     }
 }
 

@@ -3,20 +3,18 @@ package org.lw.vms.service.impl;
 import org.lw.vms.DTOs.LoginResponse;
 import org.lw.vms.DTOs.UserLoginRequest;
 import org.lw.vms.DTOs.UserRegisterRequest;
-import org.lw.vms.entity.RepairOrder;
-import org.lw.vms.entity.User;
-import org.lw.vms.entity.Vehicle;
-import org.lw.vms.mapper.MechanicMapper;
-import org.lw.vms.mapper.RepairOrderMapper;
-import org.lw.vms.mapper.UserMapper;
-import org.lw.vms.mapper.VehicleMapper;
+import org.lw.vms.entity.*;
+import org.lw.vms.mapper.*;
 import org.lw.vms.service.UserService;
 import org.lw.vms.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 /**
         * @version 1.0
@@ -47,6 +45,9 @@ public class UserServiceImpl implements UserService {
     // 自动注入 JwtUtil，用于生成和解析 JWT
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserInfoHistoryMapper userInfoHistoryMapper; // 注入 UserInfoHistoryMapper
 
     /**
             * 用户注册实现。
@@ -79,6 +80,15 @@ public class UserServiceImpl implements UserService {
 
         // 4. 插入新用户到数据库
         int rowsAffected = userMapper.insertUser(newUser);
+
+        if(rowsAffected > 0 && Objects.equals(request.getRole(), "mechanic")){
+            Mechanic mechanic = new Mechanic();
+            mechanic.setUserId(newUser.getUserId());
+            mechanic.setSpecialty("待分配");
+            mechanic.setHourlyRate(BigDecimal.ZERO);
+            int rowsAffected1 = mechanicMapper.insertMechanic(mechanic);
+        }
+
 
         if (rowsAffected > 0) {
             // 注册成功，出于安全考虑，返回前将密码置空
@@ -196,5 +206,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Integer id) {
         userMapper.deleteUser(id);
+    }
+
+    @Transactional
+    @Override
+    public User updateUser(User user) {
+        User oldUser = userMapper.findById(user.getUserId());
+        String oldName = oldUser.getName();
+        String oldContact = oldUser.getContact();
+        userMapper.updateUser(user);
+        String newName = user.getName();
+        String newContact = user.getContact();
+        UserInfoHistory history = new UserInfoHistory();
+        history.setUserId(user.getUserId());
+        history.setOldName(oldName);
+        history.setOldContact(oldContact);
+        history.setNewName(newName);
+        history.setNewContact(newContact);
+        history.setUpdateTime(LocalDateTime.now());
+        userInfoHistoryMapper.insertHistory(history);
+        return user;
     }
 }

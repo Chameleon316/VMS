@@ -9,6 +9,7 @@ import org.lw.vms.DTOs.OrderAssignmentUpdateRequest;
 import org.lw.vms.DTOs.RepairOrderRequest;
 import org.lw.vms.DTOs.UpdateWorkingHourRequest;
 import org.lw.vms.entity.*;
+import org.lw.vms.mapper.OrderAssignmentMapper;
 import org.lw.vms.service.*;
 import org.lw.vms.utils.JwtUtil;
 import org.lw.vms.utils.Result;
@@ -46,6 +47,9 @@ public class OrderAssignmentController {
 
     @Autowired
     private RepairOrderService repairOrderService;
+
+    @Autowired
+    private OrderAssignmentMapper orderAssignmentMapper;
 
     /**
      * 维修人员接收或拒绝系统分配的维修工单。
@@ -187,7 +191,10 @@ public class OrderAssignmentController {
                 for (OrderAssignment orderAssignment : assignmentsNotRejected){
                     Mechanic mechanic = mechanicService.getMechanicDetailsById(orderAssignment.getMechanicId());
                     mechanics.add(mechanic);
-                    totalWorkingCost = totalWorkingCost.add(orderAssignment.getHoursWorked().multiply(mechanic.getHourlyRate()));
+                    BigDecimal laborCost = orderAssignment.getHoursWorked().multiply(mechanic.getHourlyRate());
+                    totalWorkingCost = totalWorkingCost.add(laborCost);
+                    orderAssignment.setLaborCost(laborCost);
+                    orderAssignmentMapper.updateOrderAssignment(orderAssignment);
                     consumptions = materialConsumptionService.getMaterialConsumptionByAssignmentId(orderAssignment.getAssignmentId().longValue());
                     for (MaterialConsumptionForAssignment consumption : consumptions){
                         Material material = materialService.getMaterialById(consumption.getMaterialId());

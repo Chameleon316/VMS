@@ -16,7 +16,8 @@ public record MechanicAssignmentsResponse(
         Integer assignmentId,       // 分配记录主键（对应assignment_id）
         Integer mechanicId,         // 维修人员ID（对应mechanic_id）
         BigDecimal hoursWorked,     // 实际工作小时数
-        String assignmentStatus     // 分配状态（原status字段）
+        String assignmentStatus,     // 分配状态（原status字段）
+        BigDecimal laborCost
 ) {
     // Record 自动包含构造函数、访问器和 equals/hashCode/toString 方法
 }

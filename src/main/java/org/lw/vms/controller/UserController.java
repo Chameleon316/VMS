@@ -297,4 +297,11 @@ public class UserController {
         return Result.success("删除用户成功");
     }
 
+    @PutMapping("/{user_id}")
+    public Result<User> updateUser(@RequestBody User user) {
+        User updatedUser = userService.updateUser(user);
+        return Result.success(updatedUser, "用户信息更新成功");
+    }
+
+
 }

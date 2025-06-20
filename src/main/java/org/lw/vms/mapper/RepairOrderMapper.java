@@ -58,7 +58,7 @@ public interface RepairOrderMapper {
      * @param repairOrder 维修工单对象
      * @return 影响的行数
      */
-    @Update("UPDATE repair_order SET vehicle_id = #{vehicleId}, user_id = #{userId}, create_time = #{datetime}, " +
+    @Update("UPDATE repair_order SET vehicle_id = #{vehicleId}, user_id = #{userId}, " +
             "status = #{status}, total_material_cost = #{totalMaterialCost}, total_labor_cost = #{totalLaborCost}, " +
             "completion_time = #{completionTime} WHERE order_id = #{orderId}")
     int updateRepairOrder(RepairOrder repairOrder);

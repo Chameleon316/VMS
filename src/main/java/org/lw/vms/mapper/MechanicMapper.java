@@ -58,4 +58,7 @@ public interface MechanicMapper {
      */
     @Select("SELECT mechanic_id, user_id, specialty, hourly_rate FROM mechanic")
     List<Mechanic> findAllMechanics();
+
+    @Select("SELECT mechanic_id, user_id, specialty, hourly_rate FROM mechanic WHERE specialty = #{s}")
+    List<Mechanic> getMechanicBySpecialty(String s);
 }

@@ -6,7 +6,9 @@ package org.lw.vms.service.impl;
  */
 import org.lw.vms.DTOs.OrderAssignmentUpdateRequest;
 import org.lw.vms.DTOs.UpdateWorkingHourRequest;
+import org.lw.vms.entity.Mechanic;
 import org.lw.vms.entity.OrderAssignment;
+import org.lw.vms.mapper.MechanicMapper;
 import org.lw.vms.mapper.OrderAssignmentMapper;
 import org.lw.vms.service.OrderAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class OrderAssignmentServiceImpl implements OrderAssignmentService {
 
     @Autowired
     private OrderAssignmentMapper orderAssignmentMapper;
+
+    @Autowired
+    private MechanicMapper mechanicMapper;
 
     @Override
     @Transactional
@@ -30,6 +36,14 @@ public class OrderAssignmentServiceImpl implements OrderAssignmentService {
         }
         existingAssignment.setStatus(request.getStatus()); // 更新状态
         int rowsAffected = orderAssignmentMapper.updateOrderAssignment(existingAssignment);
+        if(request.getStatus().equals("rejected")){
+            Mechanic mechanic = mechanicMapper.findById(existingAssignment.getMechanicId());
+            List<Mechanic> mechanics = mechanicMapper.getMechanicBySpecialty(mechanic.getSpecialty());
+            if(!mechanics.isEmpty()){
+                Mechanic newMechanic = mechanics.get(new Random().nextInt(mechanics.size()));
+                createOrderAssignment(existingAssignment.getOrderId(), mechanic.getMechanicId());
+            }
+        }
         return rowsAffected > 0 ? existingAssignment : null;
     }
 

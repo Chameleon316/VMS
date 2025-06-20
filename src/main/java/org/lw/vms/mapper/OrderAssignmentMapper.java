@@ -34,7 +34,7 @@ public interface OrderAssignmentMapper {
      * @param mechanicId 维修人员 ID
      * @return 工单分配列表
      */
-    @Select("SELECT assignment_id, order_id, mechanic_id, hours_worked, status FROM order_assignment WHERE mechanic_id = #{mechanicId}")
+    @Select("SELECT assignment_id, order_id, mechanic_id, hours_worked, status,labor_cost FROM order_assignment WHERE mechanic_id = #{mechanicId}")
     List<OrderAssignment> findByMechanicId(Integer mechanicId);
 
     /**
@@ -53,7 +53,7 @@ public interface OrderAssignmentMapper {
      * @return 影响的行数
      */
     @Update("UPDATE order_assignment SET order_id = #{orderId}, mechanic_id = #{mechanicId}, " +
-            "hours_worked = #{hoursWorked}, status = #{status} WHERE assignment_id = #{assignmentId}")
+            "hours_worked = #{hoursWorked}, status = #{status},labor_cost = #{laborCost} WHERE assignment_id = #{assignmentId}")
     int updateOrderAssignment(OrderAssignment orderAssignment);
 
     /**
@@ -80,7 +80,8 @@ public interface OrderAssignmentMapper {
             "oa.assignment_id AS assignmentId, " +
             "oa.mechanic_id AS mechanicId, " +
             "oa.hours_worked AS hoursWorked, " +
-            "oa.status AS assignmentStatus " +
+            "oa.status AS assignmentStatus, " +
+            "oa.labor_cost AS laborCost " +
             "FROM repair_order ro " +
             "JOIN order_assignment oa ON ro.order_id = oa.order_id " +
             "WHERE oa.mechanic_id = #{mechanicId}")
