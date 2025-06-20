@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lw.vms.mapper.CarRepairStatsMapper">
+
+    <resultMap id="carRepairStatsResultMap" type="org.lw.vms.DTOs.CarRepairStatsDto">
+        <result property="brand" column="brand"/>
+        <result property="model" column="model"/>
+        <result property="repairCount" column="repair_count"/>
+        <result property="averageRepairCost" column="average_repair_cost"/>
+    </resultMap>
+
+    <select id="getCarRepairStatistics" resultMap="carRepairStatsResultMap">
+        SELECT
+            v.brand,
+            v.model,
+            COUNT(ro.order_id) AS repair_count,
+            COALESCE(AVG(ro.total_material_cost + ro.total_labor_cost), 0.00) AS average_repair_cost
+        FROM
+            vehicle AS v
+                JOIN
+            repair_order AS ro ON v.vehicle_id = ro.vehicle_id
+        GROUP BY
+            v.brand,
+            v.model
+        ORDER BY
+            repair_count DESC,
+            average_repair_cost DESC;
+    </select>
+
+</mapper>
